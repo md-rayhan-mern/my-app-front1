@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
 import { Menu, X, ChevronDown, Bell, User, ShoppingBag } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
 
   // NavLink এর জন্য কমন স্টাইলিং ফাংশন
   const navLinkStyles = ({ isActive }) =>
@@ -91,13 +94,20 @@ const Navbar = () => {
               <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-slate-900"></span>
             </button>
 
-            <Link
-              to="/login"
-              className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all duration-200"
-            >
-              <User className="h-4 w-4" />
-              <span>Login</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all duration-200">
+                <User className="h-4 w-4" />
+                <span>Login Now</span>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <User className="h-4 w-4" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* ৪. মোবাইল মেনু টগল বাটন (Hamburger) */}
