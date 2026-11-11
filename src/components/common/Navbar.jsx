@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { NavLink, Link } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
+import { NavLink, Link, useLocation } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
 import { Menu, X, ChevronDown, Bell, User, ShoppingBag } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 
 const Navbar = () => {
+  const location = useLocation();
+  const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { isAuthenticated } = useSelector((state) => state.auth);
-  console.log(isAuthenticated);
 
   // NavLink এর জন্য কমন স্টাইলিং ফাংশন
   const navLinkStyles = ({ isActive }) =>
@@ -103,6 +105,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all duration-200"
+                state={{ from: location }}
               >
                 <User className="h-4 w-4" />
                 <span>Login</span>

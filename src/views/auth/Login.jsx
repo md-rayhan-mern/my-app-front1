@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
+import { loginUser } from "../../features/auth/authSlice";
 
 export const Login = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  console.log(user);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     // সিম্পল ভ্যালিডেশন চেক
@@ -16,16 +21,22 @@ export const Login = () => {
     }
 
     // সফল লগইন টোস্ট (পরবর্তীতে এখানে কন্ট্রোলার বা রিডাক্স অ্যাকশন বসবে)
-    toast.success("লগইন সফল হয়েছে!");
-    console.log({ email, password });
+    try {
+      // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
+      await dispatch(loginUser({ identifier: email, password })).unwrap();
+
+      toast.success("লগইন সফল হয়েছে!");
+    } catch (err) {
+      toast.error(err || "লগইন ব্যর্থ হয়েছে!");
+    }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-6 shadow-md border border-gray-100">
+    <div className="flex min-h-screen items-center justify-center bg-transparent  px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8 rounded-2xl bg-transparent p-6 shadow-md border border-gray-100">
         {/* হেডার বা লোগো সেকশন */}
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-400">
             স্বাগতম
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -40,7 +51,7 @@ export const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-750 mb-1"
+                className="block text-sm font-medium text-gray-50 mb-1"
               >
                 ইমেইল এড্রেস
               </label>
@@ -51,7 +62,7 @@ export const Login = () => {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="relative block w-full rounded-xl border border-gray-300 px-3 py-3 text-gray-950 placeholder-gray-400 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base"
+                className="relative block w-full rounded-xl border border-gray-300 px-3 py-3 text-gray-50 placeholder-gray-400 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base"
                 placeholder="example@mail.com"
               />
             </div>
@@ -60,7 +71,7 @@ export const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-750 mb-1"
+                className="block text-sm font-medium text-gray-50 mb-1"
               >
                 পাসওয়ার্ড
               </label>
@@ -71,7 +82,7 @@ export const Login = () => {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="relative block w-full rounded-xl border border-gray-300 px-3 py-3 text-gray-950 placeholder-gray-400 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base"
+                className="relative block w-full rounded-xl border border-gray-300 px-3 py-3 text-gray-50 placeholder-gray-400 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-base"
                 placeholder="••••••••"
               />
             </div>
