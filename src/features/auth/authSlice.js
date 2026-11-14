@@ -10,9 +10,7 @@ export const loginUser = createAsyncThunk(
       console.log(userCredentials);
 
       const response = await Api.post(loginUrl, userCredentials);
-      //localStorage.setItem('token', response.data.token);
-      console.log(response.data);
-
+      localStorage.setItem("user", JSON.stringify(response.data));
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -22,7 +20,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 const initialState = {
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem("user"),
   user: null,
   token: null,
   loading: false,
@@ -34,6 +32,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
+      localStorage.removeItem("user");
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
@@ -49,6 +48,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
+        state.token = action.payload.token;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

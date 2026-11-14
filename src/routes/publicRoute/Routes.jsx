@@ -5,14 +5,6 @@ import { Login } from "../../views/auth/Login.jsx";
 import { Register } from "../../views/auth/Sign.jsx";
 export const PublicRoutes = [
   {
-    path: "/products",
-    element: <Products />,
-  },
-  {
-    path: "/about",
-    element: <About />,
-  },
-  {
     path: "/login",
     element: <Login />,
   },

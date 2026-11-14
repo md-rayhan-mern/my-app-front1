@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router";
+import { UniversalRoute } from "./Routes";
 import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import PublicRoute from "./publicRoute/PublicRoute";
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
         index: true,
         element: <Home />,
       },
+      ...UniversalRoute,
       {
         element: <PublicRoute />,
         children: [...PublicRoutes],

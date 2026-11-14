@@ -8,8 +8,8 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
-  console.log(user);
+  const { isAuthenticated, user, error } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,9 +23,11 @@ export const Login = () => {
     // সফল লগইন টোস্ট (পরবর্তীতে এখানে কন্ট্রোলার বা রিডাক্স অ্যাকশন বসবে)
     try {
       // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
-      await dispatch(loginUser({ identifier: email, password })).unwrap();
-
-      toast.success("লগইন সফল হয়েছে!");
+      const response = await dispatch(
+        loginUser({ identifier: email, password }),
+      ).unwrap();
+      console.log(response);
+      //toast.success(response.message);
     } catch (err) {
       toast.error(err || "লগইন ব্যর্থ হয়েছে!");
     }

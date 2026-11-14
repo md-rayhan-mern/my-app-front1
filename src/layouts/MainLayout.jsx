@@ -1,8 +1,12 @@
 import React from "react";
 import { Outlet } from "react-router";
 import Navbar from "../components/common/Navbar";
+import { useSelector } from "react-redux";
 
 const MainLayout = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  console.log(isAuthenticated);
+
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* গ্লোবাল মেনুবার */}
