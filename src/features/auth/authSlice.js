@@ -6,12 +6,11 @@ export const loginUser = createAsyncThunk(
   async (userCredentials, { rejectWithValue }) => {
     try {
       const loginUrl = import.meta.env.VITE_LOGIN_USER;
-      console.log(loginUrl);
-      console.log(userCredentials);
-
       const response = await Api.post(loginUrl, userCredentials);
-      localStorage.setItem("user", JSON.stringify(response.data));
-      return response.data;
+      if (response?.data) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+      }
+      return response;
     } catch (error) {
       return rejectWithValue(
         error?.response?.data?.message || "custom error correction now",
@@ -19,11 +18,15 @@ export const loginUser = createAsyncThunk(
     }
   },
 );
+
+const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+
 const initialState = {
-  isAuthenticated: !!localStorage.getItem("user"),
-  user: null,
-  token: null,
+  isAuthenticated: !!localStorage.getItem("user"), //!!storedUser?.token,
   loading: false,
+  message: null,
+  user: storedUser,
+  token: storedUser?.token || null,
   error: null,
 };
 
@@ -36,6 +39,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
+      state.message = "Logout Success";
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -45,10 +50,15 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        // console.log(action.payload.data);
+        // console.log(action.payload.data?.token);
+        // console.log(action.payload.message);
+
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = action.payload.data;
+        state.token = action.payload.data?.token || null;
+        state.message = action.payload.message;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;

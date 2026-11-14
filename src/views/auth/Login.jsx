@@ -8,8 +8,11 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuthenticated, user, error } = useSelector((state) => state.auth);
-  console.log(isAuthenticated);
+  const { isAuthenticated, user, message, error } = useSelector(
+    (state) => state.auth,
+  );
+  // console.log(user);
+  // console.log(message);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -26,9 +29,12 @@ export const Login = () => {
       const response = await dispatch(
         loginUser({ identifier: email, password }),
       ).unwrap();
-      console.log(response);
-      //toast.success(response.message);
+      console.log(response?.message);
+
+      toast.success(response?.message);
     } catch (err) {
+      console.log(err);
+
       toast.error(err || "লগইন ব্যর্থ হয়েছে!");
     }
   };

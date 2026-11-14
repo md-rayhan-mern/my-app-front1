@@ -4,8 +4,9 @@ import Navbar from "../components/common/Navbar";
 import { useSelector } from "react-redux";
 
 const MainLayout = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  console.log(isAuthenticated);
+  const { isAuthenticated, user, loading, message, token, error } = useSelector(
+    (state) => state.auth,
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">

@@ -4,15 +4,15 @@ const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL: baseUrl,
-  timeout: 3000,
+  timeout: 10000,
   headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    if (storedUser?.token) {
+      config.headers.Authorization = `Bearer ${storedUser.token}`;
     }
     return config;
   },
@@ -23,14 +23,19 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    return response.data;
+    return response?.data;
   },
   (error) => {
     if (error.response && error.response.status === 401) {
       console.error("Unauthorized! Logging out...");
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      localStorage.removeItem("user");
+
+      // ৩. লগইন পেজে থাকলে যেন অযথা পেজ রিলোড না হয়
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
+
     return Promise.reject(error);
   },
 );
