@@ -7,8 +7,11 @@ export const loginUser = createAsyncThunk(
     try {
       const loginUrl = import.meta.env.VITE_LOGIN_USER;
       const response = await Api.post(loginUrl, userCredentials);
-      if (response?.data) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+      // console.log(response?.data.user);
+      //console.log(response?.data.accessToken);
+
+      if (response?.data?.user) {
+        localStorage.setItem("user", JSON.stringify(response.data.user));
       }
       return response;
     } catch (error) {
@@ -19,14 +22,27 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const logoutUrl =
+        import.meta.env.VITE_LOGOUT_USER || "/api/v1/auth/logout";
+      // কাস্টম Api ইনস্ট্যান্স ব্যবহার করছি যাতে হেডারে Access Token এবং সাথে কুকি যায়
+      const response = await Api.post(logoutUrl);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data?.message || "Logout failed");
+    }
+  },
+);
 const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-
 const initialState = {
   isAuthenticated: !!localStorage.getItem("user"), //!!storedUser?.token,
   loading: false,
   message: null,
   user: storedUser,
-  token: storedUser?.token || null,
+  token: null,
   error: null,
 };
 
@@ -34,6 +50,18 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // এই অ্যাকশনটি টোকেন এবং ইউজার ডাটা সেট করবে
+    setCredentials: (state, action) => {
+      // সেফটি চেক: payload না থাকলে ক্র্যাশ করবে না
+      if (!action.payload) return;
+      console.log(action?.payload);
+      const { user, token } = action.payload;
+      if (user) {
+        state.user = user;
+      }
+      state.token = token;
+      state.isAuthenticated = true;
+    },
     logout: (state) => {
       localStorage.removeItem("user");
       state.isAuthenticated = false;
@@ -50,23 +78,27 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        // console.log(action.payload.data);
-        // console.log(action.payload.data?.token);
-        // console.log(action.payload.message);
+        // console.log(action?.payload?.data?.user);
 
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.data;
-        state.token = action.payload.data?.token || null;
-        state.message = action.payload.message;
+        state.user = action?.payload?.data?.user;
+        state.token = action?.payload?.data?.accessToken || null;
+        state.message = action.payload?.message;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.error = action.payload;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        authSlice.caseReducers.logout(state); // সরাসরি উপরের logout রিডিউসারটিকেই কল করা হলো
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        authSlice.caseReducers.logout(state); // সার্ভার এরর দিলেও ফ্রন্টএন্ড থেকে লগআউট হবে
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;

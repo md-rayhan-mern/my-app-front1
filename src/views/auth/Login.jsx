@@ -8,11 +8,11 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuthenticated, user, message, error } = useSelector(
+  const { isAuthenticated, user, message, error, token } = useSelector(
     (state) => state.auth,
   );
-  // console.log(user);
-  // console.log(message);
+  console.log(token);
+  console.log(user);
 
   const handleLogin = async (e) => {
     e.preventDefault();

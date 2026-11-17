@@ -1,18 +1,26 @@
 import axios from "axios";
+import { store } from "../../store/store.js";
+import { setCredentials, logout } from "../../features/auth/authSlice.js";
 
 const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:5000";
+const refreshTokenUrl = import.meta.env.VITE_REFRESHTOKEN_URL;
+console.log(refreshTokenUrl);
 
 const api = axios.create({
   baseURL: baseUrl,
   timeout: 10000,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use(
   (config) => {
-    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
-    if (storedUser?.token) {
-      config.headers.Authorization = `Bearer ${storedUser.token}`;
+    const accessToken = store.getState().auth.token;
+    console.log(accessToken);
+
+    // const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -23,16 +31,36 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
+    //console.log(response);
+
     return response?.data;
   },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      console.error("Unauthorized! Logging out...");
-      localStorage.removeItem("user");
+  async (error) => {
+    const originalRequest = error.config;
+    // যদি 401 এরর আসে এবং রিকোয়েস্টটি আগে রি-ট্রাই (retry) করা না হয়ে থাকে
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // ইনফিনিট লুপ আটকানোর জন্য ফ্ল্যাগ
+      try {
+        // ব্যাকএন্ডে রিফ্রেশ টোকেন রিকোয়েস্ট পাঠানো (কুকি অটোমেটিক যাবে)
+        // নোট: এখানে মূল axios ব্যবহার করা ভালো, যাতে ইন্টারসেপ্টর লুপে না পড়ে
+        const response = await axios.post(
+          refreshTokenUrl,
+          {},
+          { withCredentials: true },
+        );
+        console.log(response);
 
-      // ৩. লগইন পেজে থাকলে যেন অযথা পেজ রিলোড না হয়
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
+        const newAccessToken = response.data.data.accessToken;
+        console.log(newAccessToken);
+        // নতুন Access Token দিয়ে Redux Store আপডেট করা
+        store.dispatch(setCredentials({ token: newAccessToken }));
+        // ফেইল হওয়া রিকোয়েস্টের হেডারে নতুন টোকেন বসানো
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // রিফ্রেশ টোকেনও এক্সপায়ার হয়ে গেলে ইউজারকে লগআউট করে দেওয়া
+        store.dispatch(logout());
+        return Promise.reject(refreshError);
       }
     }
 
