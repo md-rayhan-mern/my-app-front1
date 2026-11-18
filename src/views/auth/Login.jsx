@@ -11,8 +11,8 @@ export const Login = () => {
   const { isAuthenticated, user, message, error, token } = useSelector(
     (state) => state.auth,
   );
-  console.log(token);
-  console.log(user);
+  // console.log(token);
+  // console.log(user);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,20 +23,16 @@ export const Login = () => {
       return;
     }
 
-    // সফল লগইন টোস্ট (পরবর্তীতে এখানে কন্ট্রোলার বা রিডাক্স অ্যাকশন বসবে)
-    try {
-      // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
-      const response = await dispatch(
-        loginUser({ identifier: email, password }),
-      ).unwrap();
-      console.log(response?.message);
-
-      toast.success(response?.message);
-    } catch (err) {
-      console.log(err);
-
-      toast.error(err || "লগইন ব্যর্থ হয়েছে!");
-    }
+    // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
+    await toast.promise(
+      dispatch(loginUser({ identifier: email, password })).unwrap(),
+      {
+        loading: "Logging in...",
+        // ব্যাকএন্ডের রেসপন্স অবজেক্ট থেকে message প্রপার্টিটি নেবে
+        success: (res) => res?.message || "Login successful!",
+        error: (err) => err?.message || err || "Login failed!",
+      },
+    );
   };
 
   return (

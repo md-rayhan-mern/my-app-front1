@@ -1,16 +1,64 @@
-import React, { useState } from "react";
-import { NavLink, Link, useLocation } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
-import { Menu, X, ChevronDown, Bell, User, ShoppingBag } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, Link, useLocation, useNavigate } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Bell,
+  User,
+  ShoppingBag,
+  LogOut,
+} from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../features/auth/authSlice";
+import toast from "react-hot-toast";
+import { logoutUser } from "../../features/auth/authSlice.js";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  // প্রোফাইল ড্রপডাউনের বাইরে ক্লিক শনাক্ত করার জন্য Ref
+  const profileDropdownRef = useRef(null);
 
+  // বাইরে ক্লিক করলে প্রোফাইল ড্রপডাউন বন্ধ করার ফাংশন
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target)
+      ) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  // লগআউট ফাংশন (আপনার Redux slice অনুযায়ী logout অ্যাকশনটি ইম্পোর্ট করে নেবেন)
+  const handleLogout = async () => {
+    try {
+      // লগআউট চলাকালীন লোডিং, সফল হলে সাকসেস এবং ব্যর্থ হলে এরর টোস্ট দেখাবে
+      await toast.promise(dispatch(logoutUser()).unwrap(), {
+        loading: "Logging out...",
+        success: (res) => res?.message || "Logged out successfully!",
+        error: (err) =>
+          err?.message || err || "Logout failed. Please try again.",
+      });
+      // মেনু ও ড্রপডাউন বন্ধ করবে
+      setIsProfileOpen(false);
+      setIsOpen(false);
+      // লগআউট সফল হলে লগইন পেজে নিয়ে যাবে (চাইলে "/" ও দিতে পারেন)
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   // NavLink এর জন্য কমন স্টাইলিং ফাংশন
   const navLinkStyles = ({ isActive }) =>
     isActive
@@ -51,7 +99,10 @@ const Navbar = () => {
             {/* ক্যাটাগরি ড্রপডাউন মেনু */}
             <div className="relative">
               <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => {
+                  setIsDropdownOpen(!isDropdownOpen);
+                  setIsProfileOpen(false);
+                }}
                 className="flex items-center space-x-1 text-slate-300 hover:text-white transition-colors duration-300 focus:outline-none"
               >
                 <span>Categories</span>
@@ -97,9 +148,67 @@ const Navbar = () => {
             </button>
 
             {isAuthenticated ? (
-              <div className="flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-cyan-500/20 transform hover:-translate-y-0.5 transition-all duration-200">
-                <User className="h-4 w-4" />
-                <span>Login Now</span>
+              <div className="relative">
+                {/* প্রোফাইল ট্রিগার বাটন */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsProfileOpen((prev) => !prev);
+                    setIsDropdownOpen(false);
+                  }}
+                  className="flex items-center space-x-2.5 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 px-3 py-1.5 rounded-xl transition-all duration-200 focus:outline-none"
+                >
+                  {/* প্রোফাইল পিকচার (ছবি না থাকলে নামের প্রথম অক্ষর দেখাবে) */}
+                  {user?.avatar || user?.photoURL || user?.image ? (
+                    <img
+                      src={user?.avatar || user?.photoURL || user?.image}
+                      alt={user?.name || "User"}
+                      className="h-8 w-8 rounded-full object-cover border border-cyan-400"
+                    />
+                  ) : (
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                      {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                    </div>
+                  )}
+
+                  {/* ইউজারের নাম */}
+                  <span className="text-slate-200 font-medium text-sm max-w-[120px] truncate">
+                    {user?.name || "User"}
+                  </span>
+
+                  {/* ড্রপডাউন আইকন */}
+                  <ChevronDown
+                    className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                      isDropdownOpen ? "rotate-180 text-cyan-400" : ""
+                    }`}
+                  />
+                </button>
+
+                {/* ড্রপডাউন মেনু */}
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2.5 w-48 bg-slate-900 border border-slate-700/80 rounded-xl shadow-xl shadow-black/50 py-1.5 z-50">
+                    {/* প্রোফাইল মেনু */}
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="flex items-center space-x-2.5 px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-cyan-400 transition-colors"
+                    >
+                      <User className="h-4 w-4" />
+                      <span>Profile</span>
+                    </Link>
+
+                    <div className="my-1 border-t border-slate-800"></div>
+
+                    {/* লগআউট মেনু */}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors text-left"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link
@@ -178,20 +287,43 @@ const Navbar = () => {
           >
             About
           </NavLink>
+          <NavLink
+            to="/profile"
+            className="flex items-center space-x-2.5 px-4 py-2.5"
+            onClick={() => setIsOpen(false)}
+          >
+            <User className="h-4 w-4" />
+            <span>Profile</span>
+          </NavLink>
 
           <div className="pt-4 border-t border-slate-800 flex items-center justify-between px-4">
             <button className="flex items-center space-x-2 text-slate-400 hover:text-white">
               <Bell className="h-6 w-6" />
               <span>Notifications</span>
             </button>
-            <Link
-              to="/login"
-              className="w-1/2 flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 p-3 rounded-xl font-medium"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="h-4 w-4" />
-              <span>Login</span>
-            </Link>
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="w-1/2 flex items-center justify-center space-x-2 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white p-3 rounded-xl font-medium transition-all duration-200"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="w-1/2 flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-blue-600 p-3 rounded-xl font-medium"
+                onClick={() => setIsOpen(false)}
+                state={{ from: location }}
+              >
+                <User className="h-4 w-4" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>

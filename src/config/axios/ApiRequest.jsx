@@ -37,8 +37,16 @@ api.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    const isAuthRequest =
+      originalRequest?.url?.includes("/login") ||
+      originalRequest?.url?.includes("/register") ||
+      originalRequest?.url?.includes("/refresh-token");
     // যদি 401 এরর আসে এবং রিকোয়েস্টটি আগে রি-ট্রাই (retry) করা না হয়ে থাকে
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRequest
+    ) {
       originalRequest._retry = true; // ইনফিনিট লুপ আটকানোর জন্য ফ্ল্যাগ
       try {
         // ব্যাকএন্ডে রিফ্রেশ টোকেন রিকোয়েস্ট পাঠানো (কুকি অটোমেটিক যাবে)

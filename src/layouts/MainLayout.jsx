@@ -7,8 +7,8 @@ const MainLayout = () => {
   const { isAuthenticated, user, loading, message, token, error } = useSelector(
     (state) => state.auth,
   );
-  console.log(token);
-  console.log(user);
+  // console.log(token);
+  // console.log(user);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
