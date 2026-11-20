@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../../features/auth/authSlice";
 
 export const Login = () => {
+  const location = useLocation();
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,16 +24,18 @@ export const Login = () => {
       return;
     }
 
-    // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
-    await toast.promise(
-      dispatch(loginUser({ identifier: email, password })).unwrap(),
-      {
-        loading: "Logging in...",
-        // ব্যাকএন্ডের রেসপন্স অবজেক্ট থেকে message প্রপার্টিটি নেবে
-        success: (res) => res?.message || "Login successful!",
-        error: (err) => err?.message || err || "Login failed!",
-      },
-    );
+    try {
+      // .unwrap() ব্যবহার করলে সফল না হওয়া পর্যন্ত পরের লাইনে যাবে না
+      await toast.promise(
+        dispatch(loginUser({ identifier: email, password })).unwrap(),
+        {
+          loading: "Logging in...",
+          // ব্যাকএন্ডের রেসপন্স অবজেক্ট থেকে message প্রপার্টিটি নেবে
+          success: (res) => res?.message || "Login successful!",
+          error: (err) => err?.message || err || "Login failed!",
+        },
+      );
+    } catch (error) {}
   };
 
   return (
@@ -106,9 +109,10 @@ export const Login = () => {
           <div>
             <button
               type="submit"
+              disabled={loading}
               className="group relative flex w-full justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
             >
-              Log In
+              {loading ? "Logging in..." : "Log In"}
             </button>
           </div>
         </form>
@@ -118,6 +122,7 @@ export const Login = () => {
           Don't have an account?{" "}
           <Link
             to="/register"
+            state={location.state}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
             Create a new account

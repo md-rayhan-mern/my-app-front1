@@ -15,7 +15,7 @@ const refreshTokenUrl = import.meta.env.PROD
   ? "/api/v1/refresh-token"
   : refreshUrls[0]?.trim() || "http://localhost:4000/api/v1/refresh-token";
 
-console.log(refreshTokenUrl);
+//console.log(refreshTokenUrl);
 
 const api = axios.create({
   baseURL: baseUrl,
@@ -67,10 +67,10 @@ api.interceptors.response.use(
           {},
           { withCredentials: true },
         );
-        console.log(response);
+        console.log(response?.data);
 
         const newAccessToken = response.data.data.accessToken;
-        console.log(newAccessToken);
+        //console.log(newAccessToken);
         // নতুন Access Token দিয়ে Redux Store আপডেট করা
         store.dispatch(setCredentials({ token: newAccessToken }));
         // ফেইল হওয়া রিকোয়েস্টের হেডারে নতুন টোকেন বসানো

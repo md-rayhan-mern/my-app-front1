@@ -8,7 +8,7 @@ const PublicRoute = () => {
 
   // ইউজার ইতিমধ্যে লগইন থাকলে সে আর লগইন/সাইনআপ পেজে যেতে পারবে না, সরাসরি ড্যাশবোর্ডে চলে যাবে
   const from = location.state?.from?.pathname || "/";
-  console.log(from);
+  //console.log(from);
 
   return !isAuthenticated ? <Outlet /> : <Navigate to={from} replace />;
 };
