@@ -7,12 +7,13 @@ const urls = import.meta.env.VITE_BASE_URL?.split(",") || [];
 const refreshUrls = import.meta.env.VITE_REFRESHTOKEN_URL?.split(",") || [];
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
 const baseUrl = import.meta.env.PROD
-  ? urls[1]?.trim() || urls[0]?.trim()
-  : urls[0]?.trim() || "http://localhost:4000";
+  ? ""
+  : urls?.trim() || "http://localhost:4000";
+
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
 const refreshTokenUrl = import.meta.env.PROD
-  ? refreshUrls[1]?.trim() || refreshUrls[0]?.trim()
-  : refreshUrls[0]?.trim() || "http://localhost:4000/api/v1/refresh-token";
+  ? "/api/v1/refresh-token"
+  : refreshUrls?.trim() || "http://localhost:4000/api/v1/refresh-token";
 
 console.log(refreshTokenUrl);
 
