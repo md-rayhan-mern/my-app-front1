@@ -36,6 +36,29 @@ export const logoutUser = createAsyncThunk(
     }
   },
 );
+// সাইনআপ API কল (Thunk)
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const registerUrl =
+        import.meta.env.VITE_CREATE_USER || "/api/v1/users/register";
+      const response = await Api.post(registerUrl, userData);
+
+      // সাইনআপের পর সাথে সাথে অটো-লগইন করাতে চাইলে:
+      if (response?.data?.user) {
+        console.log(response?.data?.user);
+
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      }
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed!",
+      );
+    }
+  },
+);
 const storedUser = JSON.parse(localStorage.getItem("user") || "null");
 const initialState = {
   isAuthenticated: !!localStorage.getItem("user"), //!!storedUser?.token,
@@ -79,6 +102,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         // console.log(action?.payload?.data?.user);
+        console.log(action.payload?.message);
 
         state.loading = false;
         state.isAuthenticated = true;
@@ -96,6 +120,24 @@ const authSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state) => {
         authSlice.caseReducers.logout(state); // সার্ভার এরর দিলেও ফ্রন্টএন্ড থেকে লগআউট হবে
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        console.log(action?.payload?.message);
+
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action?.payload?.data?.user;
+        state.token = action?.payload?.data?.accessToken || null;
+        state.message = action.payload?.message;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.error = action.payload;
       });
   },
 });

@@ -8,7 +8,7 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuthenticated, user, message, error, token } = useSelector(
+  const { isAuthenticated, user, message, error, token, loading } = useSelector(
     (state) => state.auth,
   );
   // console.log(token);
@@ -19,7 +19,7 @@ export const Login = () => {
 
     // সিম্পল ভ্যালিডেশন চেক
     if (!email || !password) {
-      toast.error("অনুগ্রহ করে সব ফিল্ড পূরণ করুন!");
+      toast.error("Please fill in all the fields!");
       return;
     }
 
@@ -41,11 +41,9 @@ export const Login = () => {
         {/* হেডার বা লোগো সেকশন */}
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-400">
-            স্বাগতম
+            Welcome
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            আপনার অ্যাকাউন্টটি লগইন করুন
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Log in to your account</p>
         </div>
 
         {/* লগইন ফর্ম */}
@@ -57,7 +55,7 @@ export const Login = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-50 mb-1"
               >
-                ইমেইল এড্রেস
+                Email
               </label>
               <input
                 id="email"
@@ -77,7 +75,7 @@ export const Login = () => {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-50 mb-1"
               >
-                পাসওয়ার্ড
+                Password
               </label>
               <input
                 id="password"
@@ -99,7 +97,7 @@ export const Login = () => {
                 href="#"
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                পাসওয়ার্ড ভুলে গেছেন?
+                Forgot your password?
               </a>
             </div>
           </div>
@@ -110,19 +108,19 @@ export const Login = () => {
               type="submit"
               className="group relative flex w-full justify-center rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
             >
-              লগইন করুন
+              Log In
             </button>
           </div>
         </form>
 
         {/* রেজিস্টার বা সাইন আপ লিঙ্ক */}
         <p className="text-center text-sm text-gray-650 mt-4">
-          অ্যাকাউন্ট নেই?{" "}
+          Don't have an account?{" "}
           <Link
             to="/register"
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            নতুন অ্যাকাউন্ট তৈরি করুন
+            Create a new account
           </Link>
         </p>
       </div>

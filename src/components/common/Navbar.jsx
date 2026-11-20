@@ -54,7 +54,7 @@ const Navbar = () => {
       setIsProfileOpen(false);
       setIsOpen(false);
       // লগআউট সফল হলে লগইন পেজে নিয়ে যাবে (চাইলে "/" ও দিতে পারেন)
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
