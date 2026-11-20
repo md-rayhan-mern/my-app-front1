@@ -9,9 +9,7 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { isAuthenticated, user, message, error, token, loading } = useSelector(
-    (state) => state.auth,
-  );
+  const { loading } = useSelector((state) => state.auth);
   // console.log(token);
   // console.log(user);
 

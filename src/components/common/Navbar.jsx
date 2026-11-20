@@ -21,6 +21,7 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+
   // প্রোফাইল ড্রপডাউনের বাইরে ক্লিক শনাক্ত করার জন্য Ref
   const profileDropdownRef = useRef(null);
 
@@ -173,7 +174,8 @@ const Navbar = () => {
 
                   {/* ইউজারের নাম */}
                   <span className="text-slate-200 font-medium text-sm max-w-[120px] truncate">
-                    {user?.name || "User"}
+                    {user?.name?.trim().split(" ")[0]?.toUpperCase() ||
+                      "Profile"}
                   </span>
 
                   {/* ড্রপডাউন আইকন */}
