@@ -69,8 +69,8 @@ api.interceptors.response.use(
         );
         console.log(response?.data);
 
-        const newAccessToken = response.data.data.accessToken;
-        //console.log(newAccessToken);
+        const newAccessToken = response?.data?.data?.accessToken;
+        console.log(newAccessToken);
         // নতুন Access Token দিয়ে Redux Store আপডেট করা
         store.dispatch(setCredentials({ token: newAccessToken }));
         // ফেইল হওয়া রিকোয়েস্টের হেডারে নতুন টোকেন বসানো

@@ -90,8 +90,8 @@ const Navbar = () => {
 
           {/* ২. ডেস্কটপ মেনু আইটেম (বড় স্ক্রিনের জন্য) */}
           <div className="hidden md:flex items-center space-x-8 font-medium">
-            <NavLink to="/" className={navLinkStyles} end>
-              Home
+            <NavLink to="/post" className={navLinkStyles} end>
+              Post
             </NavLink>
             <NavLink to="/products" className={navLinkStyles}>
               Products
