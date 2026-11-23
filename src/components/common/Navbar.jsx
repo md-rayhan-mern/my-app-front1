@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NavLink, Link, useLocation, useNavigate } from "react-router"; // react-router থেকে সরাসরি ইমপোর্ট
+import { NavLink, Link, useLocation, useNavigate } from "react-router";
 import {
   Menu,
   X,
@@ -22,10 +22,9 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // প্রোফাইল ড্রপডাউনের বাইরে ক্লিক শনাক্ত করার জন্য Ref
+  // Ref for detecting clicks outside the profile dropdown
   const profileDropdownRef = useRef(null);
-
-  // বাইরে ক্লিক করলে প্রোফাইল ড্রপডাউন বন্ধ করার ফাংশন
+  // Function to close the profile dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -35,32 +34,31 @@ const Navbar = () => {
         setIsProfileOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  // লগআউট ফাংশন (আপনার Redux slice অনুযায়ী logout অ্যাকশনটি ইম্পোর্ট করে নেবেন)
+  // Logout function (import the logout action according to your Redux slice)
   const handleLogout = async () => {
     try {
-      // লগআউট চলাকালীন লোডিং, সফল হলে সাকসেস এবং ব্যর্থ হলে এরর টোস্ট দেখাবে
+      // Logout function (import the logout action according to your Redux slice)
       await toast.promise(dispatch(logoutUser()).unwrap(), {
         loading: "Logging out...",
         success: (res) => res?.message || "Logged out successfully!",
         error: (err) =>
           err?.message || err || "Logout failed. Please try again.",
       });
-      // মেনু ও ড্রপডাউন বন্ধ করবে
+      // Will close the menu and dropdown
       setIsProfileOpen(false);
       setIsOpen(false);
-      // লগআউট সফল হলে লগইন পেজে নিয়ে যাবে (চাইলে "/" ও দিতে পারেন)
+      // Upon successful logout, you will be redirected to the login page (you can also specify "/" if you wish).
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
-  // NavLink এর জন্য কমন স্টাইলিং ফাংশন
+  // Common styling function for NavLink
   const navLinkStyles = ({ isActive }) =>
     isActive
       ? "text-cyan-400 font-semibold transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-cyan-400"
@@ -75,7 +73,7 @@ const Navbar = () => {
     <nav className="bg-slate-900/95 backdrop-blur-md text-white sticky top-0 z-50 border-b border-slate-800 shadow-lg">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* ১. লোগো সেকশন */}
+          {/* 1. Logo Section */}
           <Link
             to="/"
             className="flex-shrink-0 flex items-center space-x-2 cursor-pointer"
@@ -88,7 +86,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* ২. ডেস্কটপ মেনু আইটেম (বড় স্ক্রিনের জন্য) */}
+          {/* 2. Desktop menu items (for large screens) */}
           <div className="hidden md:flex items-center space-x-8 font-medium">
             <NavLink to="/post" className={navLinkStyles} end>
               Post
@@ -96,8 +94,7 @@ const Navbar = () => {
             <NavLink to="/products" className={navLinkStyles}>
               Products
             </NavLink>
-
-            {/* ক্যাটাগরি ড্রপডাউন মেনু */}
+            {/* Category Dropdown Menu */}
             <div className="relative">
               <button
                 onClick={() => {
@@ -111,7 +108,6 @@ const Navbar = () => {
                   className={`h-4 w-4 transform transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`}
                 />
               </button>
-
               {isDropdownOpen && (
                 <div className="absolute left-0 mt-3 w-48 rounded-xl bg-slate-800 border border-slate-700 shadow-2xl py-2 z-50 transition-all duration-200">
                   <Link
@@ -135,22 +131,19 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
             <NavLink to="/about" className={navLinkStyles}>
               About
             </NavLink>
           </div>
-
-          {/* ৩. রাইট সাইড অ্যাকশন বাটন (ডেস্কটপ) */}
+          {/* 3. Right-side action button (desktop) */}
           <div className="hidden md:flex items-center space-x-6">
             <button className="relative p-2 text-slate-400 hover:text-white transition-colors">
               <Bell className="h-6 w-6" />
               <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-slate-900"></span>
             </button>
-
             {isAuthenticated ? (
               <div className="relative">
-                {/* প্রোফাইল ট্রিগার বাটন */}
+                {/* Profile Trigger Button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -159,7 +152,7 @@ const Navbar = () => {
                   }}
                   className="flex items-center space-x-2.5 bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-cyan-500/50 px-3 py-1.5 rounded-xl transition-all duration-200 focus:outline-none"
                 >
-                  {/* প্রোফাইল পিকচার (ছবি না থাকলে নামের প্রথম অক্ষর দেখাবে) */}
+                  {/* Profile picture (if no image is available, the first letter of the name will be displayed ) */}
                   {user?.avatar || user?.photoURL || user?.image ? (
                     <img
                       src={user?.avatar || user?.photoURL || user?.image}
@@ -171,25 +164,22 @@ const Navbar = () => {
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                   )}
-
-                  {/* ইউজারের নাম */}
+                  {/* Username */}
                   <span className="text-slate-200 font-medium text-sm max-w-[120px] truncate">
                     {user?.name?.trim().split(" ")[0]?.toUpperCase() ||
                       "Profile"}
                   </span>
-
-                  {/* ড্রপডাউন আইকন */}
+                  {/* Dropdown icon */}
                   <ChevronDown
                     className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
                       isDropdownOpen ? "rotate-180 text-cyan-400" : ""
                     }`}
                   />
                 </button>
-
-                {/* ড্রপডাউন মেনু */}
+                {/* Dropdown menu */}
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2.5 w-48 bg-slate-900 border border-slate-700/80 rounded-xl shadow-xl shadow-black/50 py-1.5 z-50">
-                    {/* প্রোফাইল মেনু */}
+                    {/* Profile Menu */}
                     <Link
                       to="/profile"
                       onClick={() => setIsDropdownOpen(false)}
@@ -198,10 +188,9 @@ const Navbar = () => {
                       <User className="h-4 w-4" />
                       <span>Profile</span>
                     </Link>
-
                     <div className="my-1 border-t border-slate-800"></div>
 
-                    {/* লগআউট মেনু */}
+                    {/* Logout menu */}
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-slate-800 hover:text-red-300 transition-colors text-left"
@@ -224,7 +213,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* ৪. মোবাইল মেনু টগল বাটন (Hamburger) */}
+          {/* 4. Mobile menu toggle button (Hamburger) */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -240,7 +229,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* 📱 ৫. মোবাইল রেস্পন্সিভ ড্রয়ার মেনু (মোবাইলের জন্য) */}
+      {/* 5. Mobile-responsive drawer menu (for mobile) */}
       <div
         className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-screen opacity-100 visible" : "max-h-0 opacity-0 invisible overflow-hidden"}`}
       >
@@ -261,7 +250,7 @@ const Navbar = () => {
             Products
           </NavLink>
 
-          {/* মোবাইল ড্রপডাউন সাব-মেনু */}
+          {/* Mobile Dropdown Sub-menu */}
           <div className="px-4 py-2 space-y-2">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
               Categories

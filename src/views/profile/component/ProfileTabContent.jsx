@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Heart, MessageCircle, Play, Sparkles, X } from "lucide-react";
 
 const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // স্মুথলি পপআপ ওপেন করার ফাংশন
+  // Smooth popup open animation
   const openModal = (item) => {
     setSelectedItem(item);
-    setTimeout(() => setIsModalOpen(true), 10); // সামান্য ডিলে দিলে ট্রানজিশন কাজ করে
+    setTimeout(() => setIsModalOpen(true), 10); // Quite delay
   };
-  // স্মুথলি পপআপ বন্ধ করার ফাংশন
+  // Smooth popup close animation
   const closeModal = () => {
     setIsModalOpen(false);
-    setTimeout(() => setSelectedItem(null), 300); // ৩০০ms অ্যানিমেশন শেষ হলে ডেটা মুছবে
+    setTimeout(() => setSelectedItem(null), 300); // 300ms animation ending
   };
 
   if (isLoading) {
     return (
       <div className="py-10 text-center text-sm text-gray-400 animate-pulse">
-        ডেটা লোড হচ্ছে...
+        Loading Data...
       </div>
     );
   }
@@ -26,14 +26,14 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
   if (!items || items.length === 0) {
     return (
       <div className="py-10 text-center text-sm text-gray-500">
-        এখনো কোনো {activeTab} যুক্ত করা হয়নি।
+        Not yet any {activeTab} Not added.
       </div>
     );
   }
 
   return (
     <div className="mt-2">
-      {/* ১. POSTS ট্যাব (আগের মতোই থাকবে) */}
+      {/* 1. POSTS TAB */}
       {activeTab === "posts" && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
           {items.map((post) => (
@@ -64,8 +64,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
           ))}
         </div>
       )}
-
-      {/* ২. REELS ট্যাব (হোভার করলে মিউট অবস্থায় চলবে, ক্লিক করলে প্লেয়ার ওপেন হবে) */}
+      {/* 2. REELS TAB (Plays in a muted state on hover, Click to open the player) */}
       {activeTab === "reels" && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
           {items.map((reel) => (
@@ -74,7 +73,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
               onClick={() => openModal(reel)}
               className="relative aspect-[9/16] bg-gray-900 rounded-lg overflow-hidden group cursor-pointer border border-gray-800"
             >
-              {/* গ্রিডে ভিডিও প্রিভিউ */}
+              {/* Video preview in a grid */}
               <video
                 src={reel.videoUrl}
                 poster={reel.thumbnail}
@@ -89,7 +88,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
                 className="w-full h-full object-cover"
               />
 
-              {/* নিচে ভিউ কাউন্ট ও প্লে আইকন */}
+              {/* View count and play icon below */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2 pointer-events-none">
                 <span className="flex items-center gap-1 text-[11px] font-medium text-white">
                   <Play className="w-3 h-3 fill-white" /> {reel.views}
@@ -99,8 +98,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
           ))}
         </div>
       )}
-
-      {/* ৩. PHOTOS এবং ৪. HIGHLIGHTS (আগের মতোই থাকবে) */}
+      {/* 3. PHOTOS TAB */}
       {activeTab === "photos" && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 ">
           {items.map((photo) => (
@@ -118,7 +116,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
           ))}
         </div>
       )}
-
+      {/* 4. HIGHLIGHTS TAB*/}
       {activeTab === "highlights" && (
         <div className="grid grid-cols-3 gap-3 py-2">
           {items.map((item) => (
@@ -142,8 +140,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
           ))}
         </div>
       )}
-
-      {/* ✅ সব কন্টেন্টের (Reel, Photo, Highlight) কমন ডিটেইলস পপআপ */}
+      {/* ✅ of all content (Posts, Reel, Photo, Highlight)  Common Details Popup */}
       {selectedItem && (
         <div
           onClick={closeModal}
@@ -157,7 +154,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
               isModalOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
             }`}
           >
-            {/* বন্ধ করার বাটন */}
+            {/* Close button */}
             <button
               onClick={closeModal}
               className="absolute top-3 right-3 z-10 bg-black/60 hover:bg-black text-white p-1.5 rounded-full cursor-pointer"
@@ -165,7 +162,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
               <X className="w-5 h-5" />
             </button>
 
-            {/* ১. বাম পাশ: ভিডিও অথবা ছবি দেখাবে */}
+            {/* 1. Left side: Will display a video or an image */}
             <div className="w-full md:w-3/5 bg-black flex items-center justify-center max-h-[50vh] md:max-h-[85vh]">
               {selectedItem.videoUrl ? (
                 <video
@@ -186,10 +183,10 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
               )}
             </div>
 
-            {/* ২. ডান পাশ: ইউজার প্রোফাইল, নাম এবং পোস্টের ডিটেইলস */}
+            {/* 2. Right side: User profile, name, and post details */}
             <div className="w-full md:w-2/5 p-4 flex flex-col justify-between text-left bg-gray-900">
               <div>
-                {/* ইউজারের প্রোফাইল ছবি ও নাম */}
+                {/* User's profile picture and name */}
                 <div className="flex items-center gap-2.5 pb-3 border-b border-gray-800">
                   <img
                     src={user?.avatar || "https://placeholder.com"}
@@ -208,7 +205,7 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
                   </div>
                 </div>
 
-                {/* ক্যাপশন বা টাইটেল */}
+                {/* Caption or Title */}
                 <div className="mt-3 space-y-1.5 overflow-y-auto max-h-48">
                   {selectedItem.title && (
                     <h4 className="text-sm font-bold text-indigo-400">
@@ -218,12 +215,12 @@ const ProfileTabContent = ({ activeTab, items, isLoading, user }) => {
                   <p className="text-sm text-gray-200">
                     {selectedItem.caption ||
                       selectedItem.description ||
-                      "কোনো বিস্তারিত তথ্য নেই।"}
+                      "There is no detailed information."}
                   </p>
                 </div>
               </div>
 
-              {/* নিচে লাইক, কমেন্ট ও ভিউ সংখ্যা */}
+              {/* Number of likes, comments, and views below */}
               <div className="pt-3 mt-3 border-t border-gray-800 flex items-center gap-4 text-xs text-gray-300">
                 <span className="flex items-center gap-1">
                   <Heart className="w-4 h-4 text-rose-500" />{" "}
