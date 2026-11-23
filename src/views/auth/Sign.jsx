@@ -67,7 +67,10 @@ export const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center  px-4 py-8 sm:px-6 lg:px-8">
+    <div
+      className="flex min-h-[calc(100vh-115px)] md:min-h-[calc(100vh-80px)] items-start md:items-center justify-center px-4 pt-6 pb-8 md:py-8 sm:px-6 lg:px-8
+"
+    >
       <div className="w-full max-w-md space-y-6 rounded-2xl  p-6 shadow-md border border-gray-100">
         {/* হেডার সেকশন */}
         <div className="text-center">

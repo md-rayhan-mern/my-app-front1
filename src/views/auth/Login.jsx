@@ -37,7 +37,7 @@ export const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-transparent  px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-[calc(100vh-115px)] md:min-h-[calc(100vh-80px)] items-start md:items-center justify-center bg-transparent pt-6 md:pt-0 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-transparent p-6 shadow-md border border-gray-100">
         {/* হেডার বা লোগো সেকশন */}
         <div className="text-center">

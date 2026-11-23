@@ -1,1 +1,19 @@
 @import "tailwindcss";
+/* Custom Slim Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a; /* slate-900 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155; /* slate-700 */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4; /* cyan-500 */
+}
