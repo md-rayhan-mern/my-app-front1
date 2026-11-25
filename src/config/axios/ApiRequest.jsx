@@ -7,12 +7,12 @@ const urls = import.meta.env.VITE_BASE_URL?.split(",") || [];
 const refreshUrls = import.meta.env.VITE_REFRESHTOKEN_URL?.split(",") || [];
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
 const baseUrl = import.meta.env.PROD
-  ? " "
+  ? "https://my-app-server1.onrender.com"
   : urls[0]?.trim() || "http://localhost:4000";
 
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
 const refreshTokenUrl = import.meta.env.PROD
-  ? "/api/v1/refresh-token"
+  ? "https://my-app-server1.onrender.com/api/v1/refresh-token"
   : refreshUrls[0]?.trim() || "http://localhost:4000/api/v1/refresh-token";
 
 //console.log(refreshTokenUrl);
