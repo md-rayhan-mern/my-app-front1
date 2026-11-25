@@ -7,7 +7,7 @@ const urls = import.meta.env.VITE_BASE_URL?.split(",") || [];
 const refreshUrls = import.meta.env.VITE_REFRESHTOKEN_URL?.split(",") || [];
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
 const baseUrl = import.meta.env.PROD
-  ? ""
+  ? urls[1]?.trim()
   : urls[0]?.trim() || "http://localhost:4000";
 
 // ২. প্রোডাকশন (Vercel) হলে ২য় URL নেবে, আর লোকাল হলে ১ম URL নেবে
