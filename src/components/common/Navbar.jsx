@@ -179,7 +179,7 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
               <NavLink to="/" className={desktopTabStyles} end title="Home">
                 <Home className="h-6 w-6 mb-1 group-hover:scale-110 transition-transform" />
-                <span>Home</span>
+                <span>Feed</span>
               </NavLink>
 
               <NavLink to="/post" className={desktopTabStyles} title="Post">
@@ -547,7 +547,7 @@ const Navbar = () => {
           <div className="flex items-center justify-around px-1">
             <NavLink to="/" className={mobileTabStyles} end>
               <Home className="h-5 w-5 mb-0.5" />
-              <span>Home</span>
+              <span>Feed</span>
             </NavLink>
 
             <NavLink to="/post" className={mobileTabStyles}>

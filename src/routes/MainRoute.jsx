@@ -5,7 +5,7 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import PublicRoute from "./publicRoute/PublicRoute";
 import { ProtectedRoutes } from "./protectedRoute/Routes";
 import { PublicRoutes } from "./publicRoute/Routes";
-import Home from "../views/Home";
+import Feed from "../views/pages/Feed";
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <Feed />,
       },
       ...UniversalRoute,
       {
