@@ -5,7 +5,7 @@ import ProtectedRoute from "./protectedRoute/ProtectedRoute";
 import PublicRoute from "./publicRoute/PublicRoute";
 import { ProtectedRoutes } from "./protectedRoute/Routes";
 import { PublicRoutes } from "./publicRoute/Routes";
-import Feed from "../views/pages/Feed";
+import Feed from "../views/pages/feed/Feed";
 
 export const router = createBrowserRouter([
   {

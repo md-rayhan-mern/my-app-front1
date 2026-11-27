@@ -27,7 +27,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.token;
-    console.log(accessToken);
+    //console.log(accessToken);
 
     // const storedUser = JSON.parse(localStorage.getItem("user") || "null");
     if (accessToken) {
@@ -54,7 +54,7 @@ api.interceptors.response.use(
       originalRequest?.url?.includes("/refresh-token");
     // যদি 401 এরর আসে এবং রিকোয়েস্টটি আগে রি-ট্রাই (retry) করা না হয়ে থাকে
     if (
-      error.response?.status === 401 &&
+      (error.response?.status === 401 || error.response?.status === 403) &&
       !originalRequest._retry &&
       !isAuthRequest
     ) {
@@ -67,10 +67,10 @@ api.interceptors.response.use(
           {},
           { withCredentials: true },
         );
-        console.log(response?.data);
+        //console.log(response?.data);
 
         const newAccessToken = response?.data?.data?.accessToken;
-        console.log(newAccessToken);
+        //console.log(newAccessToken);
         // নতুন Access Token দিয়ে Redux Store আপডেট করা
         store.dispatch(setCredentials({ token: newAccessToken }));
         // ফেইল হওয়া রিকোয়েস্টের হেডারে নতুন টোকেন বসানো

@@ -13,6 +13,9 @@ export const loginUser = createAsyncThunk(
       if (response?.data?.user) {
         localStorage.setItem("user", JSON.stringify(response.data.user));
       }
+      if (response?.data?.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
       return response;
     } catch (error) {
       return rejectWithValue(
@@ -50,6 +53,9 @@ export const registerUser = createAsyncThunk(
         console.log(response?.data?.user);
 
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        if (response?.data?.accessToken) {
+          localStorage.setItem("accessToken", response.data.accessToken);
+        }
       }
       return response;
     } catch (error) {
@@ -60,12 +66,13 @@ export const registerUser = createAsyncThunk(
   },
 );
 const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+const storedToken = localStorage.getItem("accessToken") || null;
 const initialState = {
   isAuthenticated: !!localStorage.getItem("user"), //!!storedUser?.token,
   loading: false,
   message: null,
   user: storedUser,
-  token: null,
+  token: storedToken,
   error: null,
 };
 
@@ -82,11 +89,15 @@ const authSlice = createSlice({
       if (user) {
         state.user = user;
       }
-      state.token = token;
+      if (token) {
+        state.token = token;
+        localStorage.setItem("accessToken", token);
+      }
       state.isAuthenticated = true;
     },
     logout: (state) => {
       localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
@@ -102,7 +113,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         // console.log(action?.payload?.data?.user);
-        console.log(action.payload?.message);
+        //console.log(action.payload?.message);
 
         state.loading = false;
         state.isAuthenticated = true;
